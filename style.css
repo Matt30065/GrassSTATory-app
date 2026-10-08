@@ -861,7 +861,7 @@ body:not(.splash-active) .site-title{display:none!important}
 }
 
 /* =========================================================
-   v22.7.0 — premium product system
+   v22.8.0 — premium product system
    Original match engine retained; presentation rebuilt.
    ========================================================= */
 :root{
@@ -950,3 +950,113 @@ body.home-view .app-shell{padding-bottom:42px!important}
 .kit-view-btn.active{border-color:rgba(217,182,92,.7)!important;background:rgba(217,182,92,.12)!important;color:#f5dea0!important}
 @media(max-width:760px){.premium-opponent-preview{grid-template-columns:64px 76px 1fr!important}.opponent-kit-preview svg{width:76px;height:92px}}
 .action-btn{display:flex!important;align-items:center!important;justify-content:center!important;gap:9px!important}.action-glyph{width:21px;height:21px;flex:0 0 21px}.goal-btn .action-glyph{width:23px;height:23px}.share-live-btn .action-glyph{color:#ff5b61}
+
+
+/* ===== v22.8.0 PREMIUM VISUAL QUALITY PASS ===== */
+:root{
+  --gs-bg:#0b202b;
+  --gs-bg-2:#102d3b;
+  --gs-panel:#123545;
+  --gs-panel-2:#173f51;
+  --gs-line:rgba(224,235,238,.18);
+  --gs-line-strong:rgba(242,214,132,.42);
+  --gs-text:#fbfcf8;
+  --gs-muted:#b7c7cd;
+  --gs-gold:#d9b45a;
+  --gs-gold-hi:#f5df9c;
+}
+html,body{background:#0b202b!important}
+body{background:linear-gradient(180deg,#153747 0,#0d2734 48%,#091d27 100%)!important}
+.premium-surface,.card{background:linear-gradient(145deg,rgba(24,63,79,.96),rgba(11,38,50,.97))!important;box-shadow:0 24px 64px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.07)!important}
+.onboarding-shell{background:linear-gradient(160deg,rgba(23,62,78,.97),rgba(10,35,47,.98))!important}
+.onboarding-hero p,.muted{color:#c0cdd1!important}
+input,select,textarea{background:#f6f4ed!important;color:#10222c!important;border-color:rgba(13,42,55,.18)!important;box-shadow:inset 0 1px 2px rgba(0,0,0,.06)!important}
+input::placeholder{color:#74858d!important}
+
+/* Real image assets + stronger atmosphere */
+.splash-screen{background:linear-gradient(180deg,rgba(5,18,26,.15),rgba(5,18,26,.92)),url("bg-home.jpg") center 52%/cover no-repeat!important}
+.home-hero-bg{background:linear-gradient(180deg,rgba(4,20,28,.04) 0%,rgba(4,20,28,.18) 40%,rgba(4,20,28,.92) 86%),url("bg-home.jpg") center 52%/cover no-repeat!important;opacity:1!important;filter:saturate(1.05) contrast(1.04)}
+.home-hero::after{background:radial-gradient(circle at 78% 18%,rgba(255,223,137,.28),transparent 20%),linear-gradient(90deg,rgba(4,22,31,.36),transparent 54%)!important}
+.home-hero{min-height:540px!important;border-color:rgba(255,232,167,.20)!important}
+.home-clubbar{backdrop-filter:blur(6px)}
+.home-hero-copy h2{text-shadow:0 7px 28px rgba(0,0,0,.38)}
+.home-moments,.home-last-match{background:linear-gradient(145deg,rgba(30,73,89,.94),rgba(15,49,63,.96))!important}
+.destination-card{background:linear-gradient(145deg,#1a4354,#103243)!important;border-color:rgba(236,242,242,.16)!important;box-shadow:inset 0 1px rgba(255,255,255,.06),0 12px 28px rgba(3,14,20,.18)!important}
+.destination-card:hover{transform:translateY(-1px)}
+
+/* Badge polish */
+.badge-stage{background:radial-gradient(circle at 50% 28%,rgba(255,222,126,.24),transparent 28%),linear-gradient(180deg,#1c4758,#102f3d)!important;box-shadow:inset 0 1px rgba(255,255,255,.08)!important}
+.badge-preview-mount svg{filter:drop-shadow(0 28px 28px rgba(0,0,0,.38)) drop-shadow(0 0 14px rgba(255,220,120,.10))!important}
+.visual-option-grid button,.pattern-option{background:linear-gradient(180deg,#1b4658,#123747)!important;border-color:rgba(230,239,241,.16)!important}
+
+/* Kit: preview can NEVER disappear. Canvas enhances, fallback remains visible beneath it. */
+.kit-render-shell{min-height:650px!important;background:linear-gradient(180deg,rgba(10,32,43,.16),rgba(8,31,41,.72)),url("bg-home.jpg") center 54%/cover no-repeat!important;border-color:rgba(245,222,150,.24)!important;box-shadow:inset 0 1px rgba(255,255,255,.08),0 22px 54px rgba(0,0,0,.20)!important}
+.kit-render-shell::before{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(4,21,29,.20))!important;opacity:1!important}
+.kit-fallback{z-index:1!important;opacity:1!important;transition:opacity .2s ease;pointer-events:none!important}
+.kit-fallback.webgl-active{opacity:.42!important;filter:blur(.2px)!important}
+.kit-canvas{z-index:2!important}
+.kit-render-badge,.kit-view-actions,.kit-gesture-hint{z-index:3;position:relative}
+.kit-fallback svg{width:min(88%,500px)!important;max-height:575px!important;filter:drop-shadow(0 35px 32px rgba(0,0,0,.36)) drop-shadow(0 0 16px rgba(255,226,149,.08))!important}
+.kit-controls{background:linear-gradient(180deg,#173e50,#10303f)!important;box-shadow:inset 0 1px rgba(255,255,255,.055)!important}
+.kit-mode-tabs{background:#102f3d!important}.kit-mode{color:#c2d0d5!important}
+.kit-view-actions button,.segmented-control button{background:#173f50!important;color:#eef4f5!important}
+.pattern-swatch{box-shadow:0 8px 20px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.2)!important}
+
+/* Player identity: larger, more photographic bust cards */
+.player-stage{background:radial-gradient(circle at 50% 30%,rgba(245,220,145,.16),transparent 31%),linear-gradient(180deg,#1a4657,#0f3040)!important}
+.player-avatar-preview img{width:min(100%,360px)!important;filter:drop-shadow(0 28px 34px rgba(0,0,0,.32))!important}
+.avatar-choice-grid{grid-template-columns:repeat(5,1fr)!important}
+.avatar-choice{background:linear-gradient(180deg,#1b4759,#103342)!important;border:1px solid rgba(230,239,241,.15)!important;border-radius:16px!important;padding:6px!important}
+.avatar-choice img{aspect-ratio:.78!important;border-radius:12px!important}
+.avatar-choice.selected{border-color:#e2bd61!important;box-shadow:0 0 0 2px rgba(226,189,97,.18),0 14px 30px rgba(0,0,0,.18)!important}
+.avatar-choice span{color:#d4e0e3!important}
+.onboarding-player-grid{gap:14px!important}
+.squad-player-card{background:linear-gradient(180deg,#173f50,#0d2c39)!important;border-color:rgba(234,240,241,.16)!important;border-radius:20px!important;box-shadow:0 16px 30px rgba(0,0,0,.14)!important}
+.squad-player-card>img{aspect-ratio:.78!important;background:#0d2d3a!important}
+.squad-player-card strong{font-size:15px!important}.squad-player-card span{color:#bac8cd!important}
+
+/* Return squad selection to stronger, larger player-card proportions */
+.player-tile-grid{gap:12px!important}
+.player-tile{border-radius:20px!important;background:linear-gradient(180deg,#173f50,#0e2e3b)!important;border-color:rgba(232,240,241,.17)!important;box-shadow:0 14px 28px rgba(0,0,0,.14)!important;padding-bottom:14px!important}
+.player-tile img{aspect-ratio:.78!important;background:#0f3140!important}
+.player-tile strong{font-size:15px!important;margin-top:10px!important}.player-tile small{font-size:11px!important;color:#b4c4ca!important}
+.player-tile-number{background:rgba(4,17,24,.82)!important;backdrop-filter:blur(7px)}
+.player-tile.selected{border-color:#e0bb5c!important;box-shadow:0 0 0 2px rgba(224,187,92,.16),0 16px 34px rgba(0,0,0,.16)!important}
+
+/* Live Match */
+.live-card{background:linear-gradient(180deg,rgba(9,34,45,.42),rgba(6,26,35,.94) 55%,rgba(5,22,30,.99)),url("bg-live.jpg") center 20%/cover no-repeat!important}
+.live-topbar{background:rgba(10,35,46,.60)!important;backdrop-filter:blur(11px)}
+.scoreboard-hero{background:linear-gradient(180deg,rgba(16,51,64,.62),rgba(7,30,40,.80))!important;backdrop-filter:blur(9px);border-color:rgba(236,242,242,.18)!important;box-shadow:0 18px 45px rgba(0,0,0,.20)!important}
+.scoreline strong{font-size:74px!important;text-shadow:0 7px 26px rgba(0,0,0,.36)}
+.match-clock-pill{background:rgba(9,31,40,.78)!important;backdrop-filter:blur(9px)}
+.live-actions .action-btn{box-shadow:0 14px 30px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.12)!important;border:1px solid rgba(255,255,255,.12)!important}
+.goal-btn{background:linear-gradient(180deg,#f5df9d,#d6ad4c)!important}
+.live-actions .action-btn:not(.goal-btn):not(.share-live-btn){background:linear-gradient(180deg,#1d5368,#153f51)!important}
+.players-on-pitch-panel,.live-columns>div{background:rgba(17,53,67,.78)!important;backdrop-filter:blur(7px)}
+
+/* Goal / Moment / Full time imagery */
+.goal-celebration-bg{background:radial-gradient(circle at 50% 46%,rgba(255,220,118,.42),transparent 24%),linear-gradient(180deg,rgba(5,18,27,.10),rgba(5,18,27,.86)),url("bg-moment.jpg") center/cover no-repeat!important;filter:saturate(1.14) contrast(1.05)!important}
+.goal-kicker{font-size:86px!important;text-shadow:0 10px 38px rgba(224,180,69,.34)!important}
+.moment-achievement-card{background:linear-gradient(180deg,rgba(16,42,52,.70),rgba(7,25,33,.95)),url("bg-moment.jpg") center/cover no-repeat!important;border-color:rgba(244,220,145,.34)!important;box-shadow:0 38px 95px rgba(0,0,0,.44)!important}
+.result-card-shell{background:linear-gradient(180deg,rgba(9,34,45,.34),rgba(6,27,35,.91) 52%,rgba(6,25,33,.98)),url("bg-result.jpg") center 36%/cover no-repeat!important}
+.result-hero{background:rgba(13,45,58,.58)!important;backdrop-filter:blur(10px);border:1px solid rgba(239,244,245,.16)!important;border-radius:22px!important;margin:0 18px!important}
+.result-scoreline strong{font-size:76px!important;text-shadow:0 8px 26px rgba(0,0,0,.34)}
+.result-topbar{background:rgba(10,37,48,.62)!important;backdrop-filter:blur(10px)}
+
+/* Dialogs and stat surfaces are lighter, not dark-on-dark */
+dialog::backdrop{background:rgba(5,16,22,.68)!important}.dialog-card{background:linear-gradient(160deg,#1a4658,#10303f)!important}
+.event-player,.stat-player-card,.settings-player-card,.moment-history-card{background:linear-gradient(180deg,#194355,#10313f)!important;border-color:rgba(231,239,241,.15)!important}
+.stat-card{background:linear-gradient(145deg,#1d4b5e,#123543)!important}
+.bottom-nav{background:rgba(14,45,57,.92)!important;border-color:rgba(232,239,241,.17)!important}
+
+@media(max-width:760px){
+  .kit-render-shell{min-height:560px!important}
+  .avatar-choice-grid{grid-template-columns:repeat(3,1fr)!important}
+  .player-tile-grid{grid-template-columns:repeat(3,1fr)!important}
+  .home-hero{min-height:500px!important}
+}
+@media(max-width:430px){
+  .kit-render-shell{min-height:500px!important}
+  .avatar-choice-grid{grid-template-columns:repeat(3,1fr)!important}
+  .player-tile-grid{grid-template-columns:repeat(2,1fr)!important}
+}
