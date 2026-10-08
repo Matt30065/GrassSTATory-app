@@ -27,7 +27,7 @@
         <span>Designed &amp; developed by</span>
         <strong>Matt Ashby</strong>
       </div>
-      <div class="splash-version">v22.4.0</div>
+      <div class="splash-version">v22.5.0</div>
       <div class="splash-progress" aria-hidden="true"><span></span></div>
     </div>
   </div>
@@ -42,32 +42,27 @@
     </header>
 
     <div id="homeView">
-      <section class="card hero-card">
-        <p class="muted">Match day</p>
-        <div class="home-team-lockup"><div class="team-crest home-crest" id="homeTeamCrest">YTM</div><div><p class="home-team-label">YOUR CLUB</p><h2 id="homeTeamName">Your football tracker</h2></div></div>
-        <p>Start a match, check the season numbers or manage your team.</p>
-        <div class="hero-actions">
-          <button id="newMatchBtn" class="primary-btn">New Match</button>
-          <button id="settingsBtn" class="secondary-btn">⚙ Settings</button>
+      <section class="premium-home-hero">
+        <div class="home-ambient"></div>
+        <div class="premium-club-bar">
+          <div class="team-crest home-crest" id="homeTeamCrest">YTM</div>
+          <div class="premium-club-copy"><span>YOUR CLUB</span><h2 id="homeTeamName">Your Team</h2><small id="homeSeasonMeta">Season 2026/27</small></div>
+          <button id="settingsBtn" class="icon-action" type="button" aria-label="Settings">⚙</button>
         </div>
+        <button id="newMatchBtn" class="premium-create-match" type="button"><span class="match-icon">⚽</span><span><small>MATCH DAY</small><strong>CREATE MATCH</strong></span><span class="arrow">→</span></button>
       </section>
 
-      <section class="card">
-        <div class="section-heading">
-          <div>
-            <h2>Season Statistics</h2>
-            <p class="muted compact">Your season builds automatically from completed matches.</p>
-          </div>
-        </div>
-        <div id="seasonSummary" class="stat-cards"></div>
-        <div id="playerStatsTable" class="stats-table-wrap"></div>
+      <section class="card moments-preview-card">
+        <div class="section-heading"><div><p class="eyebrow">NEXT GAME</p><h2>Upcoming Moments</h2><p class="muted compact">Milestones your team could reach next.</p></div><button id="homeMomentsSeeAll" class="text-action" type="button">See all</button></div>
+        <div id="homeUpcomingMoments" class="moment-preview-list"></div>
       </section>
 
-      <section class="card">
-        <div class="section-heading">
-          <div><h2>Match History</h2><p class="muted compact">Your completed matches, ready to revisit.</p></div>
-        </div>
-        <div id="matchHistoryList" class="history-list"></div>
+      <section id="homeLastMatchCard" class="card compact-home-card hidden"></section>
+
+      <section class="home-destination-grid" aria-label="Explore your football story">
+        <button type="button" class="home-destination" id="homePlayerStatsBtn"><span class="destination-icon">◉</span><strong>Player Stats</strong><small>Players & performance</small></button>
+        <button type="button" class="home-destination" id="homeSeasonStatsBtn"><span class="destination-icon">▥</span><strong>Season Stats</strong><small>Results & trends</small></button>
+        <button type="button" class="home-destination moments-destination" id="homeMomentsBtn"><span class="destination-icon">✦</span><strong>Moments</strong><small>Milestones & memories</small></button>
       </section>
     </div>
 
@@ -84,6 +79,13 @@
         <div class="section-heading"><div><p class="eyebrow">2026/27</p><h2>Season Statistics</h2><p class="muted compact">Your season, broken down by competition.</p></div><button id="statsUpgradeBtn" class="secondary-btn hidden" type="button">Explore Platinum</button></div>
         <div class="choice-row stats-filter" id="statsFilterRow"><button class="secondary-btn active-filter" data-stats-filter="All" type="button">All</button><button class="secondary-btn" data-stats-filter="League" type="button">League</button><button class="secondary-btn" data-stats-filter="Cup" type="button">Cup</button><button class="secondary-btn" data-stats-filter="Tournament" type="button">Tournament</button><button class="secondary-btn" data-stats-filter="Friendly" type="button">Friendly</button></div>
         <div id="statsViewBody"></div>
+      </section>
+    </div>
+
+    <div id="momentsView" class="hidden">
+      <section class="card moments-preview-card">
+        <div class="section-heading"><div><p class="eyebrow">YOUR FOOTBALL STORY</p><h2>Moments</h2><p class="muted compact">Milestones and memories are created automatically from the matches you record.</p></div><button class="secondary-btn" type="button" data-nav="home">Back Home</button></div>
+        <div id="momentsHistoryList" class="moment-preview-list"></div>
       </section>
     </div>
 
@@ -139,6 +141,10 @@
           <div class="identity-preview onboarding-identity-preview">
             <div class="team-crest onboarding-crest" id="onboardingTeamCrest">YTM</div>
             <div class="identity-preview-copy"><span>TEAM CREST PREVIEW</span><strong>Generated from your initials and colours</strong></div>
+          </div>
+          <div class="premium-identity-tools">
+            <div class="identity-tool-card"><span class="eyebrow">BADGE STYLE</span><div class="choice-row"><button type="button" class="badge-style selected" data-badge-style="shield">Shield</button><button type="button" class="badge-style" data-badge-style="round">Round</button><button type="button" class="badge-style" data-badge-style="diamond">Diamond</button></div></div>
+            <div class="identity-tool-card"><span class="eyebrow">HOME SHIRT</span><div class="kit-preview" id="onboardingKitPreview"><span class="kit-collar"></span><strong id="kitPreviewAbbr">YTM</strong></div><div class="choice-row"><button type="button" class="kit-style selected" data-kit-style="plain">Plain</button><button type="button" class="kit-style" data-kit-style="stripes">Stripes</button><button type="button" class="kit-style" data-kit-style="sash">Sash</button></div></div>
           </div>
           <label class="role-select-label">How will you mainly use GrassStatory?
             <select id="onboardingRole"><option value="Parent">Parent</option><option value="Coach">Coach / Manager</option><option value="Supporter">Supporter</option><option value="Other">Other</option></select>
@@ -442,10 +448,10 @@
     </div>
   </main>
     <nav class="bottom-nav" aria-label="Primary">
-      <button type="button" class="bottom-nav-item is-active" data-nav="home">🏠<span>Home</span></button>
+      <button type="button" class="bottom-nav-item is-active" data-nav="home">⌂<span>Home</span></button>
       <button type="button" class="bottom-nav-item" data-nav="matches">⚽<span>Matches</span></button>
       <button type="button" class="bottom-nav-item" data-nav="stats">📊<span>Stats</span></button>
-      <button type="button" class="bottom-nav-item" data-nav="team">👥<span>Team</span></button>
+      <button type="button" class="bottom-nav-item" data-nav="team">👥<span>Squad</span></button>
       <button type="button" class="bottom-nav-item" data-nav="settings">•••<span>More</span></button>
     </nav>
 
