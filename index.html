@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#06131a" />
   <title>GrassStatory</title>
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css?v=22.4.0" />
+  <link rel="stylesheet" href="style.css?v=22.6.0" />
 
   <style id="critical-ui">
     html,body{margin:0;min-height:100%;background:#06131c;color:#f8fafc;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -22,12 +22,11 @@
     <div class="splash-stadium-glow"></div>
     <div class="splash-content">
       <img class="splash-wordmark" src="grassstatory-wordmark.png" alt="GrassStatory — More Than A Game" width="900" height="386" />
-      <p class="splash-tagline">Your football. Your stats. Your story.</p>
+      <p class="splash-tagline">Your football. Your stats. Your story.</p><p class="splash-version">PREMIUM · v22.6.0</p>
       <div class="splash-credit">
         <span>Designed &amp; developed by</span>
         <strong>Matt Ashby</strong>
       </div>
-      <div class="splash-version">v22.5.0</div>
       <div class="splash-progress" aria-hidden="true"><span></span></div>
     </div>
   </div>
@@ -42,27 +41,32 @@
     </header>
 
     <div id="homeView">
-      <section class="premium-home-hero">
-        <div class="home-ambient"></div>
-        <div class="premium-club-bar">
-          <div class="team-crest home-crest" id="homeTeamCrest">YTM</div>
-          <div class="premium-club-copy"><span>YOUR CLUB</span><h2 id="homeTeamName">Your Team</h2><small id="homeSeasonMeta">Season 2026/27</small></div>
-          <button id="settingsBtn" class="icon-action" type="button" aria-label="Settings">⚙</button>
+      <section class="card hero-card">
+        <p class="muted">Match day</p>
+        <div class="home-team-lockup"><div class="team-crest home-crest" id="homeTeamCrest">YTM</div><div><p class="home-team-label">YOUR CLUB</p><h2 id="homeTeamName">Your football tracker</h2></div></div>
+        <p>Start a match, check the season numbers or manage your team.</p>
+        <div class="hero-actions">
+          <button id="newMatchBtn" class="primary-btn">New Match</button>
+          <button id="settingsBtn" class="secondary-btn">⚙ Settings</button>
         </div>
-        <button id="newMatchBtn" class="premium-create-match" type="button"><span class="match-icon">⚽</span><span><small>MATCH DAY</small><strong>CREATE MATCH</strong></span><span class="arrow">→</span></button>
       </section>
 
-      <section class="card moments-preview-card">
-        <div class="section-heading"><div><p class="eyebrow">NEXT GAME</p><h2>Upcoming Moments</h2><p class="muted compact">Milestones your team could reach next.</p></div><button id="homeMomentsSeeAll" class="text-action" type="button">See all</button></div>
-        <div id="homeUpcomingMoments" class="moment-preview-list"></div>
+      <section class="card">
+        <div class="section-heading">
+          <div>
+            <h2>Season Statistics</h2>
+            <p class="muted compact">Your season builds automatically from completed matches.</p>
+          </div>
+        </div>
+        <div id="seasonSummary" class="stat-cards"></div>
+        <div id="playerStatsTable" class="stats-table-wrap"></div>
       </section>
 
-      <section id="homeLastMatchCard" class="card compact-home-card hidden"></section>
-
-      <section class="home-destination-grid" aria-label="Explore your football story">
-        <button type="button" class="home-destination" id="homePlayerStatsBtn"><span class="destination-icon">◉</span><strong>Player Stats</strong><small>Players & performance</small></button>
-        <button type="button" class="home-destination" id="homeSeasonStatsBtn"><span class="destination-icon">▥</span><strong>Season Stats</strong><small>Results & trends</small></button>
-        <button type="button" class="home-destination moments-destination" id="homeMomentsBtn"><span class="destination-icon">✦</span><strong>Moments</strong><small>Milestones & memories</small></button>
+      <section class="card">
+        <div class="section-heading">
+          <div><h2>Match History</h2><p class="muted compact">Your completed matches, ready to revisit.</p></div>
+        </div>
+        <div id="matchHistoryList" class="history-list"></div>
       </section>
     </div>
 
@@ -76,20 +80,13 @@
 
     <div id="statsView" class="hidden">
       <section class="card">
-        <div class="section-heading"><div><p class="eyebrow">2026/27</p><h2>Season Statistics</h2><p class="muted compact">Your season, broken down by competition.</p></div><button id="statsUpgradeBtn" class="secondary-btn hidden" type="button">Explore Platinum</button></div>
+        <div class="section-heading"><div><p class="eyebrow">2026/27</p><h2>Season Statistics</h2><p class="muted compact">Your season, broken down by competition.</p></div><button id="statsUpgradeBtn" class="secondary-btn" type="button">Explore Platinum</button></div>
         <div class="choice-row stats-filter" id="statsFilterRow"><button class="secondary-btn active-filter" data-stats-filter="All" type="button">All</button><button class="secondary-btn" data-stats-filter="League" type="button">League</button><button class="secondary-btn" data-stats-filter="Cup" type="button">Cup</button><button class="secondary-btn" data-stats-filter="Tournament" type="button">Tournament</button><button class="secondary-btn" data-stats-filter="Friendly" type="button">Friendly</button></div>
         <div id="statsViewBody"></div>
       </section>
     </div>
 
-    <div id="momentsView" class="hidden">
-      <section class="card moments-preview-card">
-        <div class="section-heading"><div><p class="eyebrow">YOUR FOOTBALL STORY</p><h2>Moments</h2><p class="muted compact">Milestones and memories are created automatically from the matches you record.</p></div><button class="secondary-btn" type="button" data-nav="home">Back Home</button></div>
-        <div id="momentsHistoryList" class="moment-preview-list"></div>
-      </section>
-    </div>
-
-    <div id="platinumView" class="hidden" aria-hidden="true">
+    <div id="platinumView" class="hidden">
       <section class="card platinum-hero-card">
         <p class="eyebrow">GRASSSTATORY PLATINUM</p>
         <h2>Unlock your complete GrassStatory</h2>
@@ -120,10 +117,10 @@
           </div>
           <div class="team-identity-grid onboarding-fields">
             <label>Team name
-              <input id="onboardingTeamName" type="text" maxlength="40" placeholder="e.g. Northbridge Athletic U9" />
+              <input id="onboardingTeamName" type="text" maxlength="40" placeholder="e.g. Riverside Athletic U9" />
             </label>
             <label>3-letter abbreviation
-              <input id="onboardingTeamAbbr" type="text" maxlength="3" minlength="1" placeholder="KEG" />
+              <input id="onboardingTeamAbbr" type="text" maxlength="3" minlength="1" placeholder="RIV" />
             </label>
           </div>
           <div class="team-identity-grid onboarding-fields onboarding-extra-fields">
@@ -142,10 +139,24 @@
             <div class="team-crest onboarding-crest" id="onboardingTeamCrest">YTM</div>
             <div class="identity-preview-copy"><span>TEAM CREST PREVIEW</span><strong>Generated from your initials and colours</strong></div>
           </div>
-          <div class="premium-identity-tools">
-            <div class="identity-tool-card"><span class="eyebrow">BADGE STYLE</span><div class="choice-row"><button type="button" class="badge-style selected" data-badge-style="shield">Shield</button><button type="button" class="badge-style" data-badge-style="round">Round</button><button type="button" class="badge-style" data-badge-style="diamond">Diamond</button></div></div>
-            <div class="identity-tool-card"><span class="eyebrow">HOME SHIRT</span><div class="kit-preview" id="onboardingKitPreview"><span class="kit-collar"></span><strong id="kitPreviewAbbr">YTM</strong></div><div class="choice-row"><button type="button" class="kit-style selected" data-kit-style="plain">Plain</button><button type="button" class="kit-style" data-kit-style="stripes">Stripes</button><button type="button" class="kit-style" data-kit-style="sash">Sash</button></div></div>
-          </div>
+          <section class="identity-studio" aria-label="Club identity studio">
+            <div class="studio-title"><div><p class="eyebrow">CLUB IDENTITY STUDIO</p><h3>Make it unmistakably yours</h3></div><span class="studio-badge">LIVE PREVIEW</span></div>
+            <div class="studio-grid">
+              <div class="badge-builder">
+                <div class="premium-crest shield" id="premiumCrest"><span id="premiumCrestSymbol">★</span><strong id="premiumCrestText">YTM</strong></div>
+                <div class="segmented" id="badgeShapePicker"><button type="button" data-shape="shield" class="active">Shield</button><button type="button" data-shape="round">Round</button><button type="button" data-shape="diamond">Diamond</button></div>
+                <div class="symbol-row" id="badgeSymbolPicker"><button type="button" data-symbol="★" class="active">★</button><button type="button" data-symbol="⚽">⚽</button><button type="button" data-symbol="◆">◆</button><button type="button" data-symbol="♛">♛</button></div>
+              </div>
+              <div class="kit-builder">
+                <div class="kit-stage" id="kitStage" aria-label="Rotatable shirt preview">
+                  <div class="kit-model" id="kitModel"><div class="kit-face kit-front"><div class="kit-shirt" id="homeKitPreview"><span class="kit-crest-mini">YTM</span></div></div><div class="kit-face kit-back"><div class="kit-shirt kit-back-shirt"><strong>10</strong><span>PLAYER</span></div></div></div>
+                </div>
+                <p class="drag-hint">↔ Drag the shirt to rotate</p>
+                <div class="segmented" id="kitPatternPicker"><button type="button" data-pattern="plain" class="active">Plain</button><button type="button" data-pattern="stripes">Stripes</button><button type="button" data-pattern="hoops">Hoops</button><button type="button" data-pattern="sash">Sash</button><button type="button" data-pattern="halves">Halves</button></div>
+                <div class="kit-colour-row"><label>Primary <input id="kitPrimary" type="color" value="#0b2a38"></label><label>Secondary <input id="kitSecondary" type="color" value="#d9b65c"></label><label>Accent <input id="kitAccent" type="color" value="#ffffff"></label></div>
+              </div>
+            </div>
+          </section>
           <label class="role-select-label">How will you mainly use GrassStatory?
             <select id="onboardingRole"><option value="Parent">Parent</option><option value="Coach">Coach / Manager</option><option value="Supporter">Supporter</option><option value="Other">Other</option></select>
           </label>
@@ -173,11 +184,15 @@
             <h2>Build your squad</h2>
             <p class="muted">Add the players you expect to use. You can edit the squad later in Settings.</p>
           </div>
-          <div class="squad-quick-add">
-            <input id="quickPlayerNumber" type="number" min="0" max="99" placeholder="#" aria-label="Shirt number" />
-            <input id="quickPlayerName" type="text" maxlength="40" placeholder="Player name" aria-label="Player name" />
-            <select id="quickPlayerPosition" aria-label="Position"><option value="">Position</option><option value="GK">GK</option><option value="DEF">DEF</option><option value="MID">MID</option><option value="FWD">FWD</option></select>
-            <button id="quickAddPlayerBtn" class="secondary-btn" type="button">+ Add</button>
+          <div class="player-creator">
+            <div class="player-preview-card"><div class="player-preview-art"><img id="selectedAvatarPreview" src="avatar-male-01.jpg" alt="Selected player avatar"><div class="avatar-kit-overlay" id="avatarKitOverlay"></div></div><div><p class="eyebrow">NEW PLAYER</p><strong id="playerPreviewName">Choose an avatar</strong><span id="playerPreviewMeta">Number · Position</span></div></div>
+            <div class="squad-quick-add">
+              <input id="quickPlayerNumber" type="number" min="0" max="99" placeholder="#" aria-label="Shirt number" />
+              <input id="quickPlayerName" type="text" maxlength="40" placeholder="Player name" aria-label="Player name" />
+              <select id="quickPlayerPosition" aria-label="Position"><option value="">Position</option><option value="GK">GK</option><option value="DEF">DEF</option><option value="MID">MID</option><option value="FWD">FWD</option></select>
+              <button id="quickAddPlayerBtn" class="primary-btn" type="button">Add player</button>
+            </div>
+            <div class="avatar-picker"><div class="avatar-picker-head"><strong>Choose avatar</strong><span>Fictional portrait · club kit applied</span></div><div class="avatar-grid"><button type="button" class="avatar-choice selected" data-avatar="avatar-male-01.jpg"><img src="avatar-male-01.jpg" alt="Male avatar 1"></button><button type="button" class="avatar-choice " data-avatar="avatar-male-02.jpg"><img src="avatar-male-02.jpg" alt="Male avatar 2"></button><button type="button" class="avatar-choice " data-avatar="avatar-male-03.jpg"><img src="avatar-male-03.jpg" alt="Male avatar 3"></button><button type="button" class="avatar-choice " data-avatar="avatar-male-04.jpg"><img src="avatar-male-04.jpg" alt="Male avatar 4"></button><button type="button" class="avatar-choice " data-avatar="avatar-male-05.jpg"><img src="avatar-male-05.jpg" alt="Male avatar 5"></button><button type="button" class="avatar-choice " data-avatar="avatar-male-06.jpg"><img src="avatar-male-06.jpg" alt="Male avatar 6"></button><button type="button" class="avatar-choice " data-avatar="avatar-male-07.jpg"><img src="avatar-male-07.jpg" alt="Male avatar 7"></button><button type="button" class="avatar-choice " data-avatar="avatar-male-08.jpg"><img src="avatar-male-08.jpg" alt="Male avatar 8"></button><button type="button" class="avatar-choice " data-avatar="avatar-male-09.jpg"><img src="avatar-male-09.jpg" alt="Male avatar 9"></button><button type="button" class="avatar-choice" data-avatar="avatar-female-01.jpg"><img src="avatar-female-01.jpg" alt="Female avatar 1"></button><button type="button" class="avatar-choice" data-avatar="avatar-female-02.jpg"><img src="avatar-female-02.jpg" alt="Female avatar 2"></button><button type="button" class="avatar-choice" data-avatar="avatar-female-03.jpg"><img src="avatar-female-03.jpg" alt="Female avatar 3"></button><button type="button" class="avatar-choice" data-avatar="avatar-female-04.jpg"><img src="avatar-female-04.jpg" alt="Female avatar 4"></button><button type="button" class="avatar-choice" data-avatar="avatar-female-05.jpg"><img src="avatar-female-05.jpg" alt="Female avatar 5"></button><button type="button" class="avatar-choice" data-avatar="avatar-female-06.jpg"><img src="avatar-female-06.jpg" alt="Female avatar 6"></button></div></div>
           </div>
           <div class="onboarding-squad-head"><strong id="onboardingSquadCount">0 players</strong><button id="onboardingTestSquadBtn" class="secondary-btn compact-btn" type="button">Add test squad</button></div>
           <div id="onboardingPlayerList" class="onboarding-player-list"></div>
@@ -215,17 +230,17 @@
 
         <div class="setup-section subscription-preview-section">
           <h3>Developer preview</h3>
-          <p class="muted compact hidden">Paid experience is enabled for this prototype.</p>
+          <p class="muted compact">Temporary developer control for testing Free and Platinum. This will be removed/replaced by real Apple/Google subscription entitlements before release.</p>
           <div class="choice-row plan-toggle" role="group" aria-label="Developer plan preview"><label class="choice-pill"><input type="radio" name="planPreview" value="free" /> Free</label><label class="choice-pill platinum-preview-pill"><input type="radio" name="planPreview" value="platinum" /> ⭐ Platinum</label></div><p class="muted compact plan-preview-status" id="planPreviewStatus">Previewing Free</p>
         </div>
         <div class="setup-section first-section">
           <h3>Team identity</h3>
           <div class="identity-preview"><div class="team-crest settings-crest" id="settingsTeamCrest">YTM</div><div class="identity-preview-copy"><span>STANDARD TEAM CREST</span><strong id="settingsTeamPreviewName">Your Team</strong><small>Your abbreviation updates the crest automatically.</small></div></div><div class="team-identity-grid">
             <label>Team name
-              <input id="teamName" type="text" maxlength="40" placeholder="e.g. Northbridge Athletic U9" />
+              <input id="teamName" type="text" maxlength="40" placeholder="e.g. Riverside Athletic U9" />
             </label>
             <label>3-letter abbreviation
-              <input id="teamAbbr" type="text" maxlength="3" minlength="1" placeholder="KEG" />
+              <input id="teamAbbr" type="text" maxlength="3" minlength="1" placeholder="RIV" />
             </label>
           </div>
           <p class="muted compact">The abbreviation appears inside your standard team crest.</p>
@@ -258,7 +273,7 @@
             </label>
             <div class="settings-action">
               <button type="submit" class="secondary-btn">Save settings</button>
-              <span id="settingsSaved" class="saved-message"></span>
+              <span id="settingsSaved" class="saved-message"></span><button id="resetPrototypeBtn" type="button" class="danger-ghost">Reset prototype / Start again</button>
             </div>
           </form>
         </div>
@@ -448,10 +463,10 @@
     </div>
   </main>
     <nav class="bottom-nav" aria-label="Primary">
-      <button type="button" class="bottom-nav-item is-active" data-nav="home">⌂<span>Home</span></button>
+      <button type="button" class="bottom-nav-item is-active" data-nav="home">🏠<span>Home</span></button>
       <button type="button" class="bottom-nav-item" data-nav="matches">⚽<span>Matches</span></button>
       <button type="button" class="bottom-nav-item" data-nav="stats">📊<span>Stats</span></button>
-      <button type="button" class="bottom-nav-item" data-nav="team">👥<span>Squad</span></button>
+      <button type="button" class="bottom-nav-item" data-nav="team">👥<span>Team</span></button>
       <button type="button" class="bottom-nav-item" data-nav="settings">•••<span>More</span></button>
     </nav>
 
@@ -535,6 +550,6 @@
       window.setTimeout(finish, DISPLAY_MS);
     })();
   </script>
-  <script src="app.js?v=22.4.0"></script>
-</body>
+  <script src="app.js?v=22.6.0"></script>
+<div class="version-chip">v22.6.0</div></body>
 </html>

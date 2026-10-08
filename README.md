@@ -1,28 +1,22 @@
-# GrassSTATory v22.5.0
+# GrassSTATory v22.6.0
 
-Incremental premium UX release built directly on the stable v22.4.0 / original v21.1 application architecture.
+Premium identity and squad-creation iteration built on the original v21.1 match engine.
+
+## Upload to GitHub Pages
+Upload every file in this folder directly to the repository root. This build deliberately uses a flat file structure.
 
 ## What changed
-- Premium Home rebuilt around **Create Match** as the primary action.
-- Home now shows **Upcoming Moments**, last match (when available), and dedicated **Player Stats / Season Stats / Moments** destinations.
-- First-use club setup now includes selectable badge shape and home-shirt style previews alongside club colours.
-- Moments screen added; milestones are derived from the same locally stored match/player data.
-- Splash version updated to v22.5.0.
-- Paid/Platinum remains the assumed experience.
+- Paid/Platinum experience is the default.
+- Splash identifies v22.6.0.
+- First-use Club Identity Studio with configurable badge shape/symbol/colours.
+- Interactive home-kit preview with Plain, Stripes, Hoops, Sash and Halves patterns.
+- Drag left/right on the kit to rotate between front/back.
+- Primary, secondary and accent kit colours.
+- Squad creation now includes selectable fictional human portrait avatars.
+- Created players retain their selected avatar.
+- Squad and starting-lineup selection use avatar-led player tiles.
+- Settings includes Reset prototype / Start again.
+- Original match engine, event logic, timer, storage and stats calculations retained.
 
-## What deliberately did NOT change
-- Existing working match setup engine.
-- Live match timer/event engine.
-- Match storage and localStorage keys.
-- Existing stats calculations.
-- GitHub Pages deployment model.
-- Flat repository structure.
-
-## GitHub update
-Upload the files in this folder directly over v22.4.0 in the root of `main`.
-
-**Delete one legacy file if it is still in the repository:** `premium-player-art.jpg`. It is no longer used and contained an obsolete club reference.
-
-No other v22.4.0 files need deleting. Existing filenames are intentionally retained so GitHub will mark them as modified/replaced.
-
-After committing, allow GitHub Pages a minute or two to deploy, then hard-refresh the site.
+## Prototype note
+The portrait library is a prototype visual set. A production release should use a commissioned/licensed consistent portrait library and a production 3D garment model. The interaction model is intentionally structured so those assets can replace the prototype visuals without rewriting match logic.
