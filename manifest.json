@@ -5,9 +5,19 @@
   "display": "standalone",
   "background_color": "#06131c",
   "theme_color": "#06131c",
-  "description": "Your football. Your stats. Your story.",
+  "description": "Premium grassroots football match tracking, stats and Moments.",
   "icons": [
-    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
-    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }
