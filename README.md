@@ -1,62 +1,109 @@
-# GrassSTATory v22.8.0
+# GrassSTATory v23.0.0
 
-Premium visual-quality pass built on the stable v22.7 match/state engine.
+Premium grassroots football match tracking prototype.
 
-## What changed
+This release integrates the approved premium visual proof into the original GrassSTATory application architecture. The existing local match engine, match history, squad state, timer, event logging, statistics and browser storage remain the functional foundation; the main changes are in first-use identity creation, player presentation, Home, live match interactions, celebrations and result presentation.
 
-- Brighter, layered premium colour system to reduce the dark-on-dark feel.
-- New high-resolution stadium/pitch background assets for Home, Live Match, goal/Moment and Full Time screens.
-- Kit Studio preview is now always visible. The high-quality front/back fallback remains visible even when WebGL is unavailable; WebGL enhances it when supported.
-- Home and Away kits remain separate designs and can be previewed independently.
-- Player identity system now uses anonymous, realistic bust/head artwork rather than Mii/Wii-style vector faces.
-- The user-created home kit still renders from the shoulders down on each player identity.
-- Player/squad selection cards have returned to stronger, larger proportions with better depth and lighting.
-- Live Match has a dedicated stadium treatment, brighter scoreboard surfaces and stronger action controls.
-- Goal celebration and Moment Achieved use dedicated atmospheric imagery and stronger lighting.
-- Full Time uses its own result-day stadium background and a more broadcast-like score treatment.
-- Badge and kit studio surfaces have improved lighting, depth and contrast.
+## What changed in v23.0.0
 
-## Functionality deliberately retained from v22.7
+### Premium visual system
+- Brighter layered navy/teal surfaces with restrained gold accents and higher contrast.
+- High-resolution stadium/tunnel imagery on Home, Live Match, Goal/Moment and Full Time states.
+- More deliberate sports-broadcast lighting and hierarchy.
+- Larger original-style Player Stats cards rather than generic compact cards.
 
-- Original GrassSTATory local-storage/state architecture.
-- Match setup and match engine.
-- Timer and half-time/full-time flow.
-- Goal, assist, opposition goal, substitution and undo logic.
-- Player/season statistics.
-- Upcoming and achieved Moments.
-- Paid/Premium assumed throughout.
-- Flat GitHub Pages-compatible repository structure.
+### First use and club identity
+- Club setup remains part of the local prototype; no account/backend is required.
+- Badge Studio retained with generated crest options and existing-badge upload support.
+- Separate Home and Away kit designs.
+- Kit Studio always keeps the garment preview visible while editing.
+- Home/Away pattern, colour and collar settings remain independent.
 
-## Updating from v22.8.0
+### Kit presentation
+- Replaced the previous flat procedural shirt appearance with high-resolution garment artwork and garment-lighting assets.
+- Front / side / back views are supported through the existing Kit Studio controls.
+- The approved default Home/Away designs render at the signed-off visual quality.
+- User-selected colours/patterns use the same garment silhouette and lighting pipeline.
 
-You can upload this release directly over v22.8.0. You do not need to delete the existing files first.
+### Players and squad
+- Anonymous realistic player bust treatment replaces Wii/Mii-style avatars.
+- Male/female appearance selection remains available.
+- Player identity is used through squad selection, starting lineup, live events, statistics and Moments.
+- Player cards are closer to the proportions and presence of the original application.
 
-1. Unzip the release.
-2. In GitHub choose **Add file -> Upload files**.
-3. Drag every file in this folder into the root of `main`.
-4. Commit with a message such as `GrassSTATory v22.8.0 visual quality pass`.
-5. Wait for GitHub Pages to redeploy.
-6. Hard refresh the site.
+### Live Match
+- Original match/timer/event engine retained.
+- Stronger stadium atmosphere and scoreboard presentation.
+- Goal, Substitution and Opposition Goal remain the primary actions.
+- Normal event confirmation feedback remains fast and unobtrusive.
 
-New assets in this release:
+### Goal entry
+Goal entry is now sequential so each stage fits on a phone screen:
 
-- `avatar-head-01.jpg` to `avatar-head-05.jpg`
-- `bg-home.jpg`
-- `bg-live.jpg`
-- `bg-result.jpg`
-- `bg-moment.jpg`
+1. Select scorer.
+2. Select one of the original goal types: **Normal / Penalty / Own Goal**.
+3. Select assist or **No assist**.
+4. Event records and returns to the match.
 
-Do not put them in a subfolder; the build intentionally remains flat.
+No additional goal types were introduced.
 
-## Testing first use
+### Substitutions
+- Select the player going off from on-pitch players.
+- Then select the player coming on from available substitutes.
+- Live-action tiles are deliberately smaller than browsing/statistics cards.
 
-If your browser still has an existing team, squad or match history, use **Settings -> Reset app / Start again** to return to first-time setup.
+### Moments / celebrations / results
+- Our goals use a stronger visual celebration state.
+- Milestones can trigger a Moment Achieved treatment.
+- Full Time uses the premium result/stadium treatment while retaining the underlying match data.
 
-## QA notes
+## Data and testing
 
-- JavaScript syntax checked with Node.
-- First-use Club -> Badge -> Kit flow was rendered from the actual HTML build during QA.
-- Kit fallback rendering was visually checked at mobile width and remains available if WebGL cannot initialise.
-- No Kewford text exists in the release files.
+GrassSTATory remains local-first for this prototype. Club, squad, matches and statistics are stored in the browser.
 
-The WebGL kit renderer remains procedural rather than a manufacturer-grade scanned garment model. The interaction and fallback now behave correctly; a future production asset pass can replace the procedural shirt mesh without changing the surrounding app flow.
+If an older club/squad appears after updating, use the app's reset/start-again option to test from first use, or clear the site's browser storage.
+
+## GitHub Pages installation
+
+The release deliberately keeps a flat repository structure.
+
+1. Unzip the Git-ready package.
+2. In the GitHub repository choose **Add file -> Upload files**.
+3. Upload all files from the unzipped folder directly into the root of `main`.
+4. Existing files with the same names can be overwritten; you do not need to delete them first.
+5. Commit the change, for example: `GrassSTATory v23.0.0 premium integration`.
+6. Allow GitHub Pages a few minutes to redeploy and then hard-refresh the site.
+
+### Obsolete files to delete if they still exist from older releases
+
+These are not required by v23.0.0:
+
+- `patch.py`
+- `service-worker.js`
+- `premium-player-art.jpg`
+- `player-avatar.svg`
+- old `avatar-head-*`, `avatar-mask-*`, `avatar-neutral-*` or `avatar-premium-*` files
+- `kit-base-front.png`
+- `kit-base-side.png`
+- `kit-base-back.png`
+
+Do not delete the `avatar-clean-*`, `kit-*-reference.png`, `kit-*-lighting.png` or `bg-*.jpg` files included in this release.
+
+## Visual QA completed
+
+The running HTML implementation was exercised through the following states with no runtime/page errors in the QA browser:
+
+- Home
+- Home/Away Kit Studio
+- Player creator / squad
+- Live Match
+- Goal scorer selection
+- Goal type selection
+- Assist / No assist selection
+- Goal celebration
+- Full Time result
+- Player Stats
+
+## Prototype boundary
+
+The approved default kit artwork now meets the signed-off visual direction. The configurable colour/pattern mode applies user choices through a real garment silhouette/lighting pipeline, but it is still a prototype configurator rather than a manufacturer-grade Spized-style 3D garment system. The original match engine and customer journey remain the priority while that rendering layer is refined.

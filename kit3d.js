@@ -1,47 +1,94 @@
-(function(global){
-  'use strict';
-  const TAU=Math.PI*2;
-  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-  const hexToRgb=(hex)=>{let h=String(hex||'#1b2630').replace('#','');if(h.length===3)h=h.split('').map(x=>x+x).join('');const n=parseInt(h,16);return[((n>>16)&255)/255,((n>>8)&255)/255,(n&255)/255]};
-  const m4={
-    identity:()=>new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]),
-    multiply:(a,b)=>{const o=new Float32Array(16);for(let r=0;r<4;r++)for(let c=0;c<4;c++)o[c*4+r]=a[0*4+r]*b[c*4+0]+a[1*4+r]*b[c*4+1]+a[2*4+r]*b[c*4+2]+a[3*4+r]*b[c*4+3];return o},
-    perspective:(fovy,aspect,near,far)=>{const f=1/Math.tan(fovy/2),nf=1/(near-far);return new Float32Array([f/aspect,0,0,0,0,f,0,0,0,0,(far+near)*nf,-1,0,0,2*far*near*nf,0])},
-    translate:(x,y,z)=>new Float32Array([1,0,0,0,0,1,0,0,0,1,0,x,y,z,1]),
-    rotY:(a)=>{const c=Math.cos(a),s=Math.sin(a);return new Float32Array([c,0,-s,0,0,1,0,0,s,0,c,0,0,0,0,1])},
-    rotX:(a)=>{const c=Math.cos(a),s=Math.sin(a);return new Float32Array([1,0,0,0,0,c,s,0,0,-s,c,0,0,0,0,1])},
-    scale:(x,y,z)=>new Float32Array([x,0,0,0,0,y,0,0,0,0,z,0,0,0,0,1])
+/* GrassSTATory v23.0.0 premium garment renderer.
+   Image-based material renderer using approved garment silhouettes + lighting maps.
+   Exposes the legacy GrassKit3D.KitRenderer API so the proven app logic remains unchanged. */
+(function(){
+  const VIEWS=['front','side','back'];
+  const ASSETS={
+    front:'kit-front-lighting.png',
+    side:'kit-side-lighting.png',
+    back:'kit-back-lighting.png'
   };
-  function shader(gl,type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s)||'shader');return s}
-  function program(gl,vs,fs){const p=gl.createProgram();gl.attachShader(p,shader(gl,gl.VERTEX_SHADER,vs));gl.attachShader(p,shader(gl,gl.FRAGMENT_SHADER,fs));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(p)||'link');return p}
-  function pushTri(out,a,b,c,uvA,uvB,uvC){const ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];let nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;const l=Math.hypot(nx,ny,nz)||1;nx/=l;ny/=l;nz/=l;for(const [p,uv] of [[a,uvA],[b,uvB],[c,uvC]])out.push(p[0],p[1],p[2],nx,ny,nz,uv[0],uv[1]);}
-  function prism(poly,depth=0.18,curve=0.07){const out=[];const n=poly.length;const minX=Math.min(...poly.map(p=>p[0])),maxX=Math.max(...poly.map(p=>p[0])),minY=Math.min(...poly.map(p=>p[1])),maxY=Math.max(...poly.map(p=>p[1]));const uv=p=>[(p[0]-minX)/(maxX-minX||1),(p[1]-minY)/(maxY-minY||1)];const cz=(x,side)=>side*(depth+curve*(1-Math.min(1,Math.abs(x)/(Math.max(Math.abs(minX),Math.abs(maxX))||1))));const center=[poly.reduce((s,p)=>s+p[0],0)/n,poly.reduce((s,p)=>s+p[1],0)/n,0];for(const side of [1,-1]){const cc=[center[0],center[1],cz(center[0],side)];for(let i=0;i<n;i++){const a=poly[i],b=poly[(i+1)%n];const aa=[a[0],a[1],cz(a[0],side)],bb=[b[0],b[1],cz(b[0],side)];if(side===1)pushTri(out,cc,aa,bb,uv(center),uv(a),uv(b));else pushTri(out,cc,bb,aa,uv(center),uv(b),uv(a));}}
-    for(let i=0;i<n;i++){const a=poly[i],b=poly[(i+1)%n];const af=[a[0],a[1],cz(a[0],1)],bf=[b[0],b[1],cz(b[0],1)],ab=[a[0],a[1],cz(a[0],-1)],bb=[b[0],b[1],cz(b[0],-1)];pushTri(out,af,ab,bb,[0,0],[0,1],[1,1]);pushTri(out,af,bb,bf,[0,0],[1,1],[1,0]);}
-    return new Float32Array(out);
+  const REF={
+    home:{front:'kit-front-reference.png',side:'kit-side-reference.png',back:'kit-back-reference.png'},
+    away:{front:'away-front-reference.png',side:'away-side-reference.png',back:'away-back-reference.png'}
+  };
+  const cache=new Map();
+  function image(src){
+    if(cache.has(src)) return cache.get(src);
+    const im=new Image(); im.decoding='async'; im.src=src; cache.set(src,im); return im;
   }
-  function torus(cx,cy,major=0.31,minor=0.045,seg=56,tube=10){const out=[];const pos=(a,b)=>[(major+minor*Math.cos(b))*Math.cos(a)+cx,(major+minor*Math.cos(b))*Math.sin(a)+cy,minor*Math.sin(b)+0.22];for(let i=0;i<seg;i++){for(let j=0;j<tube;j++){const a0=i/seg*TAU,a1=(i+1)/seg*TAU,b0=j/tube*TAU,b1=(j+1)/tube*TAU;const p00=pos(a0,b0),p10=pos(a1,b0),p11=pos(a1,b1),p01=pos(a0,b1);pushTri(out,p00,p10,p11,[i/seg,j/tube],[(i+1)/seg,j/tube],[(i+1)/seg,(j+1)/tube]);pushTri(out,p00,p11,p01,[i/seg,j/tube],[(i+1)/seg,(j+1)/tube],[i/seg,(j+1)/tube]);}}return new Float32Array(out)}
-  function plane(x,y,z,w,h,flip=false){const out=[];const a=[x-w/2,y-h/2,z],b=[x+w/2,y-h/2,z],c=[x+w/2,y+h/2,z],d=[x-w/2,y+h/2,z];if(!flip){pushTri(out,a,b,c,[0,0],[1,0],[1,1]);pushTri(out,a,c,d,[0,0],[1,1],[0,1]);}else{pushTri(out,a,c,b,[1,0],[0,1],[0,0]);pushTri(out,a,d,c,[1,0],[1,1],[0,1]);}return new Float32Array(out)}
+  function ready(im){return im.complete&&im.naturalWidth>0}
+  function wait(im,cb){if(ready(im)) cb(); else {im.addEventListener('load',cb,{once:true}); im.addEventListener('error',cb,{once:true});}}
+  function hex(h){h=String(h||'#123456').replace('#',''); if(h.length===3)h=h.split('').map(x=>x+x).join(''); return [parseInt(h.slice(0,2),16)||0,parseInt(h.slice(2,4),16)||0,parseInt(h.slice(4,6),16)||0]}
+  function rgba(c,a=1){const [r,g,b]=hex(c);return `rgba(${r},${g},${b},${a})`}
+  function roundedRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);}
   class KitRenderer{
-    constructor(canvas,opts={}){this.canvas=canvas;this.gl=canvas.getContext('webgl',{alpha:true,antialias:true,premultipliedAlpha:false});if(!this.gl)throw new Error('WebGL unavailable');this.rotation=opts.rotation||0;this.zoom=opts.zoom||1;this.dragging=false;this.config={pattern:'stripes',primary:'#081922',secondary:'#d8b24f',accent:'#f5e3a5',...opts.config};this.badgeSvg=opts.badgeSvg||'';this.number=opts.number||'10';this.name=opts.name||'PLAYER';this._init();this.setInteractive(opts.interactive!==false);this.resize();this.render();}
-    _init(){const gl=this.gl;this.vs=`attribute vec3 aPosition;attribute vec3 aNormal;attribute vec2 aUv;uniform mat4 uModel;uniform mat4 uVP;varying vec3 vN;varying vec2 vUv;varying vec3 vP;void main(){vec4 w=uModel*vec4(aPosition,1.0);vP=w.xyz;vN=mat3(uModel)*aNormal;vUv=aUv;gl_Position=uVP*w;}`;this.fs=`precision mediump float;varying vec3 vN;varying vec2 vUv;uniform vec3 uPrimary;uniform vec3 uSecondary;uniform vec3 uAccent;uniform int uPattern;vec3 pattern(){vec3 c=uPrimary;float s;if(uPattern==1){s=step(.5,fract(vUv.x*7.0));c=mix(uPrimary,uSecondary,s);}else if(uPattern==2){s=step(.5,fract(vUv.y*8.0));c=mix(uPrimary,uSecondary,s);}else if(uPattern==3){c=vUv.x<.5?uPrimary:uSecondary;}else if(uPattern==4){s=step(abs((vUv.x+vUv.y)-1.0),.13);c=mix(uPrimary,uSecondary,s);}else if(uPattern==5){float q=abs(fract((vUv.x-vUv.y)*4.0)-.5);c=mix(uPrimary,uSecondary,step(.28,q));}else if(uPattern==6){float y=abs(vUv.y-.55);float x=abs(vUv.x-.5);s=step(y,x*.65+.05);c=mix(uPrimary,uSecondary,s);}return c;}void main(){vec3 n=normalize(vN);vec3 ld=normalize(vec3(-.55,.78,1.1));float d=max(dot(n,ld),0.0);float back=max(dot(n,normalize(vec3(.45,-.2,-1.0))),0.0);float rim=pow(1.0-max(abs(n.z),0.0),2.0);float fabric=(sin(vUv.y*360.0)+sin(vUv.x*280.0))*0.008;vec3 c=pattern();c*=.30+d*.72+back*.15+fabric;c+=uAccent*rim*.09;gl_FragColor=vec4(c,1.0);}`;this.mainProg=program(gl,this.vs,this.fs);this.texProg=program(gl,this.vs,`precision mediump float;varying vec2 vUv;uniform sampler2D uTex;void main(){vec4 c=texture2D(uTex,vUv);if(c.a<.08)discard;gl_FragColor=c;}`);
-      const body=[[-.72,1.15],[-.34,1.34],[.34,1.34],[.72,1.15],[.93,-1.48],[-.93,-1.48]];const left=[[-.72,1.15],[-1.42,.92],[-1.24,.27],[-.88,.48]];const right=left.map(([x,y])=>[-x,y]).reverse();this.body=this._buffer(prism(body,.18,.085));this.left=this._buffer(prism(left,.16,.04));this.right=this._buffer(prism(right,.16,.04));this.collarCrew=this._buffer(torus(0,1.32,.31,.046,56,10));this.collarVLeft=this._buffer(prism([[-.34,1.34],[-.24,1.37],[.02,1.05],[-.04,1.01]],.045,0));this.collarVRight=this._buffer(prism([[.34,1.34],[.24,1.37],[-.02,1.05],[.04,1.01]],.045,0));this.collarPoloLeft=this._buffer(prism([[-.38,1.31],[-.05,1.05],[-.11,.86],[-.49,1.17]],.04,0));this.collarPoloRight=this._buffer(prism([[.38,1.31],[.05,1.05],[.11,.86],[.49,1.17]],.04,0));this.badge=this._buffer(plane(-.41,.53,.285,.34,.42,false));this.backText=this._buffer(plane(0,.36,-.285,.95,1.05,true));gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);gl.clearColor(0,0,0,0);this._setBadge(this.badgeSvg);this._setBackText();}
-    _buffer(data){const gl=this.gl,b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);return{b,count:data.length/8}}
-    _attribs(prog,obj){const gl=this.gl;gl.bindBuffer(gl.ARRAY_BUFFER,obj.b);const stride=8*4;for(const [name,size,off] of [['aPosition',3,0],['aNormal',3,3*4],['aUv',2,6*4]]){const loc=gl.getAttribLocation(prog,name);if(loc>=0){gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,size,gl.FLOAT,false,stride,off)}}}
-    _makeTextureFromCanvas(c){const gl=this.gl,t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,false);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,c);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.generateMipmap(gl.TEXTURE_2D);return t}
-    _setBadge(svg){const c=document.createElement('canvas');c.width=c.height=256;const ctx=c.getContext('2d');ctx.clearRect(0,0,256,256);if(svg){const img=new Image();img.onload=()=>{ctx.clearRect(0,0,256,256);ctx.drawImage(img,12,6,232,244);if(this.badgeTex)this.gl.deleteTexture(this.badgeTex);this.badgeTex=this._makeTextureFromCanvas(c);this.render()};img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)}else{ctx.fillStyle='#d8b24f';ctx.font='700 80px system-ui';ctx.textAlign='center';ctx.fillText('GS',128,150);this.badgeTex=this._makeTextureFromCanvas(c)}}
-    _setBackText(){const c=document.createElement('canvas');c.width=512;c.height=512;const x=c.getContext('2d');x.clearRect(0,0,512,512);x.fillStyle='rgba(255,255,255,.98)';x.textAlign='center';x.shadowColor='rgba(0,0,0,.35)';x.shadowBlur=8;x.font='700 48px system-ui';x.fillText(String(this.name||'PLAYER').toUpperCase().slice(0,14),256,125);x.font='900 210px system-ui';x.fillText(String(this.number||'10'),256,365);if(this.backTex)this.gl.deleteTexture(this.backTex);this.backTex=this._makeTextureFromCanvas(c)}
-    setConfig(cfg){this.config={...this.config,...cfg};this.render()}
-    setBadgeSvg(svg){this.badgeSvg=svg||'';this._setBadge(this.badgeSvg)}
-    setBack(name,number){this.name=name||'PLAYER';this.number=number||'10';this._setBackText();this.render()}
-    setRotation(a){this.rotation=a;this.render()}
-    front(){this.rotation=0;this.render()}
-    back(){this.rotation=Math.PI;this.render()}
-    resize(){const dpr=Math.min(2,window.devicePixelRatio||1);const w=Math.max(10,this.canvas.clientWidth),h=Math.max(10,this.canvas.clientHeight);const rw=Math.round(w*dpr),rh=Math.round(h*dpr);if(this.canvas.width!==rw||this.canvas.height!==rh){this.canvas.width=rw;this.canvas.height=rh;this.gl.viewport(0,0,rw,rh)}this.render()}
-    setInteractive(on=true){if(!on||this._bound)return;this._bound=true;let lastX=0,lastDist=0;const pts=new Map();this.canvas.style.touchAction='none';this.canvas.addEventListener('pointerdown',e=>{pts.set(e.pointerId,{x:e.clientX,y:e.clientY});this.canvas.setPointerCapture(e.pointerId);lastX=e.clientX;if(pts.size===2){const a=[...pts.values()];lastDist=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)}});this.canvas.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pts.size===1){const dx=e.clientX-lastX;lastX=e.clientX;this.rotation+=dx*.012;this.render()}else if(pts.size===2){const a=[...pts.values()];const dist=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(lastDist){this.zoom=clamp(this.zoom*(dist/lastDist),.78,1.45)}lastDist=dist;this.render()}});const end=e=>{pts.delete(e.pointerId);if(pts.size===1)lastX=[...pts.values()][0].x};this.canvas.addEventListener('pointerup',end);this.canvas.addEventListener('pointercancel',end);this.canvas.addEventListener('wheel',e=>{e.preventDefault();this.zoom=clamp(this.zoom*(e.deltaY>0?.94:1.06),.78,1.45);this.render()},{passive:false});new ResizeObserver(()=>this.resize()).observe(this.canvas)}
-    render(){const gl=this.gl,c=this.canvas;if(!c.width||!c.height)return;gl.viewport(0,0,c.width,c.height);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);const asp=c.width/c.height;const proj=m4.perspective(35*Math.PI/180,asp,.1,100);const view=m4.translate(0,.05,-5.5/this.zoom);let model=m4.multiply(m4.rotX(-.045),m4.rotY(this.rotation));model=m4.multiply(model,m4.scale(1.08,1.08,1.08));const vp=m4.multiply(proj,view);const pat={plain:0,stripes:1,hoops:2,halves:3,sash:4,geometric:5,chevron:6}[this.config.pattern]??0;gl.useProgram(this.mainProg);gl.uniformMatrix4fv(gl.getUniformLocation(this.mainProg,'uModel'),false,model);gl.uniformMatrix4fv(gl.getUniformLocation(this.mainProg,'uVP'),false,vp);gl.uniform3fv(gl.getUniformLocation(this.mainProg,'uPrimary'),hexToRgb(this.config.primary));gl.uniform3fv(gl.getUniformLocation(this.mainProg,'uSecondary'),hexToRgb(this.config.secondary));gl.uniform3fv(gl.getUniformLocation(this.mainProg,'uAccent'),hexToRgb(this.config.accent));gl.uniform1i(gl.getUniformLocation(this.mainProg,'uPattern'),pat);for(const obj of [this.body,this.left,this.right]){this._attribs(this.mainProg,obj);gl.drawArrays(gl.TRIANGLES,0,obj.count)}
-      // Collar uses accent colour regardless of main pattern
-      gl.uniform3fv(gl.getUniformLocation(this.mainProg,'uPrimary'),hexToRgb(this.config.accent));gl.uniform3fv(gl.getUniformLocation(this.mainProg,'uSecondary'),hexToRgb(this.config.accent));gl.uniform1i(gl.getUniformLocation(this.mainProg,'uPattern'),0);const collar=this.config.collar==='v'?[this.collarVLeft,this.collarVRight]:this.config.collar==='polo'?[this.collarVLeft,this.collarVRight,this.collarPoloLeft,this.collarPoloRight]:[this.collarCrew];for(const obj of collar){this._attribs(this.mainProg,obj);gl.drawArrays(gl.TRIANGLES,0,obj.count)};
-      gl.useProgram(this.texProg);gl.uniformMatrix4fv(gl.getUniformLocation(this.texProg,'uModel'),false,model);gl.uniformMatrix4fv(gl.getUniformLocation(this.texProg,'uVP'),false,vp);gl.activeTexture(gl.TEXTURE0);gl.uniform1i(gl.getUniformLocation(this.texProg,'uTex'),0);const frontness=Math.cos(this.rotation);if(frontness>-.2&&this.badgeTex){gl.bindTexture(gl.TEXTURE_2D,this.badgeTex);this._attribs(this.texProg,this.badge);gl.drawArrays(gl.TRIANGLES,0,this.badge.count)}if(frontness<.2&&this.backTex){gl.bindTexture(gl.TEXTURE_2D,this.backTex);this._attribs(this.texProg,this.backText);gl.drawArrays(gl.TRIANGLES,0,this.backText.count)}}
+    constructor(canvas,opts={}){
+      this.canvas=canvas; this.ctx=canvas.getContext('2d'); this.config=opts.config||{}; this.badgeSvg=opts.badgeSvg||''; this.name=opts.name||'PLAYER'; this.number=opts.number||'10'; this.view=0; this.type='home'; this.dragX=null; this.scale=1;
+      this.pixelRatio=Math.min(window.devicePixelRatio||1,2); this.resize(); this.bind(); this.preload();
+    }
+    preload(){Object.values(ASSETS).forEach(src=>wait(image(src),()=>this.draw())); Object.values(REF).flatMap(o=>Object.values(o)).forEach(src=>wait(image(src),()=>this.draw()));}
+    resize(){const r=this.canvas.getBoundingClientRect(); const w=Math.max(320,Math.round(r.width||720)), h=Math.max(420,Math.round(r.height||820)); this.canvas.width=Math.round(w*this.pixelRatio);this.canvas.height=Math.round(h*this.pixelRatio);this.ctx.setTransform(this.pixelRatio,0,0,this.pixelRatio,0,0);this.w=w;this.h=h;this.draw();}
+    bind(){
+      const c=this.canvas;
+      c.addEventListener('pointerdown',e=>{this.dragX=e.clientX;c.setPointerCapture?.(e.pointerId)});
+      c.addEventListener('pointerup',e=>{if(this.dragX==null)return;const dx=e.clientX-this.dragX;if(Math.abs(dx)>28){this.view=(this.view+(dx<0?1:-1)+3)%3;this.draw()}this.dragX=null});
+      c.addEventListener('wheel',e=>{e.preventDefault();this.scale=Math.max(.78,Math.min(1.18,this.scale+(e.deltaY<0?.04:-.04)));this.draw()},{passive:false});
+      window.addEventListener('resize',()=>this.resize(),{passive:true});
+    }
+    setConfig(cfg={}){this.config={...this.config,...cfg};this.type=(cfg.type||cfg.mode||this.type)==='away'?'away':this.type;this.draw()}
+    setBadgeSvg(svg){this.badgeSvg=svg||'';this.draw()}
+    setBack(name,number){this.name=name||this.name;this.number=number||this.number;this.draw()}
+    setView(v){this.view=Math.max(0,Math.min(2,Number(v)||0));this.draw()}
+    reset(){this.view=0;this.scale=1;this.draw()}
+    makePattern(ctx,x,y,w,h){
+      const cfg=this.config||{},p=cfg.primary||'#0b3156',s=cfg.secondary||'#f5f3ec',a=cfg.accent||'#d8b85b',pat=cfg.pattern||'plain';
+      ctx.fillStyle=p;ctx.fillRect(x,y,w,h);
+      ctx.save();ctx.translate(x,y);
+      ctx.fillStyle=s;
+      if(pat==='stripes'){const sw=w/7;for(let i=1;i<7;i+=2)ctx.fillRect(i*sw,0,sw,h)}
+      else if(pat==='hoops'){const sh=h/8;for(let i=1;i<8;i+=2)ctx.fillRect(0,i*sh,w,sh)}
+      else if(pat==='halves')ctx.fillRect(w/2,0,w/2,h);
+      else if(pat==='sash'){ctx.beginPath();ctx.moveTo(-w*.15,h*.12);ctx.lineTo(w*.08,0);ctx.lineTo(w*1.15,h*.88);ctx.lineTo(w*.92,h);ctx.closePath();ctx.fill()}
+      else if(pat==='chevron'){ctx.beginPath();ctx.moveTo(0,h*.26);ctx.lineTo(w*.5,h*.53);ctx.lineTo(w,h*.26);ctx.lineTo(w,h*.39);ctx.lineTo(w*.5,h*.66);ctx.lineTo(0,h*.39);ctx.closePath();ctx.fill()}
+      else if(pat==='geometric'){const d=w/5;ctx.globalAlpha=.92;for(let yy=-d;yy<h+d;yy+=d){for(let xx=-d;xx<w+d;xx+=d){ctx.beginPath();ctx.moveTo(xx,yy);ctx.lineTo(xx+d,yy);ctx.lineTo(xx,yy+d);ctx.closePath();ctx.fill()}}ctx.globalAlpha=1}
+      // restrained accent trim gives the garment a tailored, premium edge
+      ctx.fillStyle=a;ctx.globalAlpha=.92;ctx.fillRect(0,h*.94,w,h*.018);ctx.restore();
+    }
+    draw(){
+      const ctx=this.ctx;if(!ctx||!this.w)return; const W=this.w,H=this.h;ctx.clearRect(0,0,W,H);
+      // stadium-stage vignette, intentionally bright enough to inspect fabric
+      const g=ctx.createRadialGradient(W*.5,H*.34,10,W*.5,H*.40,W*.72);g.addColorStop(0,'rgba(255,255,255,.16)');g.addColorStop(.42,'rgba(10,55,70,.16)');g.addColorStop(1,'rgba(1,8,12,.0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+      const view=VIEWS[this.view], light=image(ASSETS[view]);
+      if(!ready(light)){ctx.fillStyle='rgba(255,255,255,.7)';ctx.font='700 16px system-ui';ctx.textAlign='center';ctx.fillText('Loading kit preview…',W/2,H/2);wait(light,()=>this.draw());return}
+      const iw=light.naturalWidth,ih=light.naturalHeight,ar=iw/ih;let dh=H*.73*this.scale,dw=dh*ar;if(dw>W*.82*this.scale){dw=W*.82*this.scale;dh=dw/ar}const dx=(W-dw)/2,dy=(H-dh)/2+8;
+      const temp=document.createElement('canvas');temp.width=Math.max(1,Math.round(dw*this.pixelRatio));temp.height=Math.max(1,Math.round(dh*this.pixelRatio));const t=temp.getContext('2d');t.scale(this.pixelRatio,this.pixelRatio);const tw=dw,th=dh;
+      const cfg=this.config||{};
+      const signedHome=(cfg.pattern||'stripes')==='stripes' && String(cfg.primary||'').toLowerCase()==='#092d55' && String(cfg.secondary||'').toLowerCase()==='#f4f2ec';
+      const signedAway=(cfg.pattern||'geometric')==='geometric' && String(cfg.primary||'').toLowerCase()==='#d9b657';
+      const ref=image(REF[this.type][view]);
+      if((this.type==='home'&&signedHome)||(this.type==='away'&&signedAway)){
+        if(ready(ref)) t.drawImage(ref,0,0,tw,th); else wait(ref,()=>this.draw());
+      }else{
+        // Custom material mode: exact garment silhouette plus photographic fold/seam lighting.
+        t.drawImage(light,0,0,tw,th);t.globalCompositeOperation='source-in';this.makePattern(t,0,0,tw,th);
+        t.globalCompositeOperation='multiply';t.globalAlpha=.48;t.drawImage(light,0,0,tw,th);t.globalAlpha=1;
+        t.globalCompositeOperation='screen';t.globalAlpha=.10;t.drawImage(light,0,0,tw,th);t.globalAlpha=1;
+        t.globalCompositeOperation='source-over';
+      }
+      // collar and sleeve trim details track the known garment silhouette
+      const accent=this.config.accent||'#d8b85b';t.strokeStyle=accent;t.lineWidth=Math.max(2,tw*.012);t.globalAlpha=.9;
+      if(view==='front'){t.beginPath();t.arc(tw*.50,th*.095,tw*.105,0.12*Math.PI,.88*Math.PI);t.stroke()}
+      else if(view==='back'){t.beginPath();t.arc(tw*.50,th*.088,tw*.10,.12*Math.PI,.88*Math.PI);t.stroke()}
+      t.globalAlpha=1;
+      // back identity, kept sharp over the fabric render
+      if(view==='back'){t.textAlign='center';t.fillStyle='rgba(255,255,255,.94)';t.shadowColor='rgba(0,0,0,.65)';t.shadowBlur=8;t.font=`800 ${Math.round(tw*.075)}px system-ui`;t.fillText(String(this.name||'PLAYER').toUpperCase(),tw*.5,th*.29);t.font=`900 ${Math.round(tw*.26)}px system-ui`;t.fillText(String(this.number||'10'),tw*.5,th*.62);t.shadowBlur=0}
+      ctx.save();ctx.shadowColor='rgba(0,0,0,.58)';ctx.shadowBlur=30;ctx.shadowOffsetY=18;ctx.drawImage(temp,dx,dy,dw,dh);ctx.restore();
+      // badge asynchronously drawn onto the front/side only
+      if(this.badgeSvg&&view!=='back'){const bi=new Image();bi.onload=()=>{ctx.save();const bw=dw*(view==='front'?.13:.10),bh=bw*1.2,bx=view==='front'?dx+dw*.58:dx+dw*.54,by=dy+dh*.25;ctx.shadowColor='rgba(0,0,0,.3)';ctx.shadowBlur=6;ctx.drawImage(bi,bx,by,bw,bh);ctx.restore()};bi.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(this.badgeSvg)}
+      // view indicator
+      ctx.fillStyle='rgba(4,18,25,.72)';roundedRect(ctx,W/2-58,H-50,116,32,16);ctx.fill();ctx.fillStyle='#f7e3a2';ctx.font='800 12px system-ui';ctx.textAlign='center';ctx.fillText(view==='side'?'3/4 VIEW':view.toUpperCase(),W/2,H-29);
+    }
   }
-  global.GrassKit3D={KitRenderer};
-})(window);
+  window.GrassKit3D={KitRenderer};
+})();
