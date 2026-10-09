@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#06131a" />
-  <title>GrassSTATory</title>
+  <title>GrassSTATory v23.3</title>
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css?v=23.0.0" />
+  <link rel="stylesheet" href="style.css?v=23.1.0" />
 
   <style id="critical-ui">
     html,body{margin:0;min-height:100%;background:#06131c;color:#f8fafc;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -23,7 +23,7 @@
     <div class="splash-content">
       <img class="splash-wordmark" src="grassstatory-wordmark.png" alt="GrassSTATory — More Than A Game" width="900" height="386" />
       <p class="splash-tagline">Your football. Your stats. Your story.</p>
-      <div class="splash-version">PREMIUM · v23.0.0</div>
+      <div class="splash-version">PREMIUM · v23.3.0</div>
       <div class="splash-progress" aria-hidden="true"><span></span></div>
     </div>
   </div>
@@ -59,7 +59,7 @@
       </section>
 
       <section id="homeLastMatchSection" class="home-last-match premium-surface hidden">
-        <div class="section-heading premium-heading"><div><span class="section-label">LAST MATCH</span><h2>Latest result</h2></div></div>
+        <div class="section-heading premium-heading"><div><span class="section-label">RECENT RESULTS</span><h2>Previous results</h2><p class="muted compact">Your latest completed matches.</p></div></div>
         <div id="homeLastMatch"></div>
       </section>
 
@@ -452,7 +452,7 @@
 
 
   <div id="eventFeedback" class="event-feedback hidden" aria-live="assertive"><div class="event-feedback-ring"></div><strong id="eventFeedbackText">EVENT RECORDED</strong></div>
-  <div id="goalCelebration" class="goal-celebration hidden"><div class="goal-celebration-bg"></div><div class="goal-celebration-content"><div class="goal-player-stage"><img id="goalCelebrationAvatar" alt="" /><div id="goalCelebrationCrest" class="celebration-crest"></div></div><span class="goal-kicker">GOAL!</span><strong id="goalCelebrationPlayer">PLAYER</strong><div id="goalCelebrationMeta" class="celebration-meta"></div><div id="goalCelebrationScore" class="celebration-score">1 – 0</div></div></div>
+  <div id="goalCelebration" class="goal-celebration hidden"><div class="goal-celebration-bg"></div><div class="goal-celebration-content"><div class="goal-player-stage"><div id="goalCelebrationAvatar" class="celebration-player-identity"></div><div id="goalCelebrationCrest" class="celebration-crest"></div></div><span class="goal-kicker">GOAL!</span><strong id="goalCelebrationPlayer">PLAYER</strong><div id="goalCelebrationMeta" class="celebration-meta"></div><div id="goalCelebrationScore" class="celebration-score">1 – 0</div></div></div>
   <dialog id="momentDialog" class="moment-dialog"><div class="moment-achievement-card"><button id="momentCloseBtn" class="moment-close" type="button" aria-label="Close">×</button><span class="section-label">MOMENT ACHIEVED</span><div id="momentAvatar" class="moment-avatar"></div><strong id="momentBigNumber" class="moment-big-number">25</strong><h2 id="momentTitle">GOALS</h2><h3 id="momentPlayerName">PLAYER</h3><p id="momentDetail" class="muted"></p><div class="moment-dialog-actions"><button id="shareMomentBtn" class="primary-btn" type="button">Share Moment</button><button id="momentBackToMatchBtn" class="secondary-btn" type="button">Back to Match</button></div></div></dialog>
 
   <dialog id="playerDialog"><form id="playerForm" class="dialog-card"><h2 id="playerDialogTitle">Add player</h2><label>Name<input id="playerName" type="text" required /></label><label>Shirt number<input id="playerNumber" type="number" min="0" max="99" /></label><label>Position<select id="playerPosition"><option value="">Not set</option><option value="GK">Goalkeeper</option><option value="DEF">Defender</option><option value="MID">Midfielder</option><option value="FWD">Forward</option></select></label><div class="dialog-actions"><button type="button" class="danger-btn hidden" id="deletePlayerBtn">Delete</button><span class="dialog-spacer"></span><button type="button" class="secondary-btn" id="cancelPlayerBtn">Cancel</button><button type="submit" class="primary-btn">Save player</button></div></form></dialog>
@@ -524,7 +524,7 @@
       window.setTimeout(finish, DISPLAY_MS);
     })();
   </script>
-  <script src="kit3d.js?v=23.0.0"></script>
-  <script src="app.js?v=23.0.0"></script>
+  <script src="kit3d.js?v=23.1.0"></script>
+  <script src="app.js?v=23.1.0"></script>
 </body>
 </html>
